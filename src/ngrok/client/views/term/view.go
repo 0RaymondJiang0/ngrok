@@ -2,12 +2,14 @@
 package term
 
 import (
-	termbox "github.com/nsf/termbox-go"
 	"ngrok/client/mvc"
 	"ngrok/log"
 	"ngrok/proto"
 	"ngrok/util"
+	"strings"
 	"time"
+
+	termbox "github.com/nsf/termbox-go"
 )
 
 type TermView struct {
@@ -104,7 +106,14 @@ func (v *TermView) draw() {
 	v.Printf(0, 3, "%-30s%s/%s", "Version", state.GetClientVersion(), state.GetServerVersion())
 	var i int = 4
 	for _, t := range state.GetTunnels() {
-		v.Printf(0, i, "%-30s%s -> %s", "Forwarding", t.PublicUrl, t.LocalAddr)
+
+		if strings.Contains(t.PublicUrl, ":") {
+			url := strings.Split(t.PublicUrl, ":")
+			v.Printf(0, i, "%-30s%s:%s -> %s", "Forwarding", url[0], url[1], t.LocalAddr)
+		} else {
+			v.Printf(0, i, "%-30s%s -> %s", "Forwarding", t.PublicUrl, t.LocalAddr)
+		}
+
 		i++
 	}
 	v.Printf(0, i+0, "%-30s%s", "Web Interface", v.ctl.GetWebInspectAddr())
@@ -114,6 +123,8 @@ func (v *TermView) draw() {
 
 	msec := float64(time.Millisecond)
 	v.Printf(0, i+2, "%-30s%.2fms", "Avg Conn Time", connTimer.Mean()/msec)
+
+	v.Printf(0, i+3, "The remote ngrok server uses Nginx as a proxy :)")
 
 	termbox.Flush()
 }
