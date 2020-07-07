@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"ngrok/conn"
@@ -80,6 +81,14 @@ func NewControl(ctlConn conn.Conn, authMsg *msg.Auth) {
 	failAuth := func(e error) {
 		_ = msg.WriteMsg(ctlConn, &msg.AuthResp{Error: e.Error()})
 		ctlConn.Close()
+	}
+	//checkout client
+	ca := NewClientAuth(authMsg)
+	if !ca.IsValid() {
+		// fmt.Println(authMsg.User)
+		// fmt.Println(authMsg.Password)
+		failAuth(errors.New(fmt.Sprintf("Invalid client with auth: %s%s", authMsg.User, authMsg.Password)))
+		return
 	}
 
 	// register the clientid

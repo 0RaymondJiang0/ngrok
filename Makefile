@@ -50,3 +50,7 @@ clean:
 contributors:
 	echo "Contributors to ngrok, both large and small:\n" > CONTRIBUTORS
 	git log --raw | grep "^Author: " | sort | uniq | cut -d ' ' -f2- | sed 's/^/- /' | cut -d '<' -f1 >> CONTRIBUTORS
+
+
+cert:
+	bash scripts/recreate-cert.sh
