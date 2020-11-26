@@ -54,3 +54,9 @@ contributors:
 
 cert:
 	bash scripts/recreate-cert.sh
+
+macos-client:
+	bash scripts/macos.sh
+
+linux-server:
+	bash scripts/linux-server.sh
