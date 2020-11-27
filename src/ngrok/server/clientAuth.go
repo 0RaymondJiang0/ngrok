@@ -2,7 +2,6 @@ package server
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"ngrok/msg"
 	"os"
@@ -26,9 +25,11 @@ func NewClientAuth(auth *msg.Auth) ClientAuth {
 }
 
 func (fa *fileAuthDb) IsValid() bool {
-	if fa.Auth.User == "" {
-		return false
+	//To checkout user token is valid
+	if len(fa.Auth.User) < 16 || !strings.Contains(fa.Auth.User, "@") {
+		log.Println("client user token too short or invalid")
 	}
+
 	if len(authTokens) == 0 {
 		tokens, err := fa.readLines("./tokens.txt")
 		if err != nil {
@@ -45,9 +46,16 @@ func (fa *fileAuthDb) IsValid() bool {
 		// fmt.Println("======")
 		// fmt.Println(fa.Auth.User)
 		// fmt.Println(token)
-		if strings.TrimSpace(token) == fmt.Sprintf("%s", fa.Auth.User) {
+		if !strings.Contains(token, "@") {
+			log.Printf("invalid server token: %s\n, token must contains @", token)
+			return false
+		}
+		serverToken := strings.Split(strings.TrimSpace(token), "@")
+		clientToken := strings.Split(strings.TrimSpace(fa.Auth.User), "@")
+		if serverToken[0] == clientToken[0] && serverToken[1] == clientToken[1] {
 			return true
 		}
+
 	}
 	return false
 }
