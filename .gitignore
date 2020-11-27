@@ -10,3 +10,6 @@ src/ngrok/client/assets/
 src/ngrok/server/assets/
 .DS_Store
 certs/
+ngrokroot.crt 
+snakeoil.crt
+snakeoil.key
