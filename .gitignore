@@ -13,3 +13,4 @@ certs/
 ngrokroot.crt 
 snakeoil.crt
 snakeoil.key
+.srl
